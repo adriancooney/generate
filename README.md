@@ -4,10 +4,21 @@ Simple project generation from templates. It's admittedly brittle and won't hand
 ##Dependencies
 `generate` requires Node.js version v0.9.1 or greater.
 
+##Installation
+To install `generate`, run the following:
+    
+    git clone http://github.com/dunxrion/generate.git
+    cd generate
+    chmod +x install.sh
+    ./install.sh
+
 ##Usage
 Help: `generate help`
+
 Generate a project: Navigate to the directory you wish for your project to be created in and do `generate <template>`
+
 Add a template: `generate add <project directory|project_name.json>`
+
 View available templates: `generate list`
 
 ##To add your own project
