@@ -3,6 +3,9 @@
 #Create the asset directory in $HOME/.generate
 assetDirectory=".generate"
 projectsDirectory="projects"
+binFileName="generate"
+binFileLocation="bin/$binFileName"
+installDir="/usr/bin"
 
 if [ ! -d "$HOME/.generate" ] || [ "$1" = "-f" ]
 then
@@ -20,3 +23,7 @@ then
 else
  echo "Directory .generate already created. Use -f to force install."
 fi
+
+echo "Copying $binFileName to $installDir"
+cp "$binFileLocation" "$installDir"
+chmod +x "$installDir/$binFileName"

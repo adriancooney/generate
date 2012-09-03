@@ -1,0 +1,12 @@
+{
+    "name" : "Basic File Structure",
+    "Description" : "Base HTML/CSS/JS File Structure",
+    "files": {
+        "index.html" : "",
+        "lib": {
+            "function.js": "",
+            "style.css": "",
+            "img": {}
+        }
+    }
+}

@@ -1,0 +1,123 @@
+#!/usr/bin/env node
+
+var fs = require("fs"),
+	exec = require("child_process").exec;
+
+var config = {
+		assetsDirectory: process.env["HOME"] + "/.generate/projects",
+		cwd: process.cwd()
+	},
+	arg = process.argv.slice(2, process.argv.length),
+    fn = arg[0],
+
+    projects = fs.readdirSync(config.assetsDirectory);
+
+switch( fn ) {
+
+	case "ls": case "list":
+
+		console.log("Available Project templates.");
+		projects.forEach(function(project) {
+			var name = project.replace(".json", ""),
+				conf = getProjectConfig(name),
+				data;
+
+			if(conf.error) data = conf.msg;
+			else data = "\t" + conf.name + " ('" + name + "')" + ((conf.description) ? (" -- " + conf.description) : "");
+
+			console.log(data);
+		});
+	break;
+
+	case "help": case undefined:
+		printHelp();
+	break;
+
+	case "add":
+		if(!arg[1]) {
+			console.log("Please specify a directory or project file to add");
+			console.log("For usage: generate help");
+		} else {
+			addProject(arg[1]);
+		}
+	break;
+
+	default:
+		var data = getProjectConfig(fn);
+		if(data) {
+			generate(fn, data);
+		} else {
+			console.log("Unrecognized project '" + fn + "'. For usage: generate help");
+		}
+}
+
+function printHelp() {
+	[
+		"generate -- Generate project files from templates",
+		"Usage:",
+		"\tls, list \t\t List available project templates",
+		"\tadd <directory|json>\t Add a directory or project template",
+		"\t<project>\t\t Generate project from given template name"
+
+	].forEach(function(line) {
+		console.log(line);
+	});
+};
+
+function getProjectConfig(projectName) {
+	var dir = config.assetsDirectory + "/",
+		file = (fs.existsSync(dir + projectName + "/project.json")) ?
+				dir + projectName + "/project.json" : 
+					((fs.existsSync(dir + projectName + ".json")) ?
+						dir + projectName + ".json": false);
+
+	if(!file) return { error: true, msg: "\tError with project '" + projectName + "'." }
+	else {
+		return JSON.parse(fs.readFileSync(file));
+	}
+}
+
+function generate(name, project) {
+	console.log("Generating template '" + project.name + "'..");
+
+	if(project.files) {
+		console.log("Project contained in config..");
+		generateFromConfig(project);
+	} else {
+		console.log("Project contain in folder..");
+		generateFromFS(name)
+	}
+
+}
+
+function addProject(dir) {
+	console.log("Adding project to /.generate/projects");
+	var stat = fs.statSync(config.cwd + "/" + dir);
+
+	if(stat.isDirectory()) {
+		exec("cp -r " + config.cwd + "/" + dir + " " + config.assetsDirectory);
+	} else if(stat.isFile()) {
+		exec("cp " + config.cwd + "/" + dir + " " + config.assetsDirectory);
+	}
+}
+
+function generateFromConfig(project) {
+	var cwd = config.cwd;
+	(function iterate(dir, files) {
+		for(var file in files) {
+			if(!(typeof files[file] === "object")) {
+
+				var f = dir + "/" + file;
+				fs.writeFileSync(f, files[file] || "");
+			} else {
+				fs.mkdirSync(dir + "/" + file);
+				iterate(dir + "/" + file, files[file]);
+			}
+		}
+	})(cwd, project.files);
+}
+
+function generateFromFS(project) {
+	exec("cp -R " + config.assetsDirectory + "/" + project + "/* .");
+	exec("rm project.json");
+}
