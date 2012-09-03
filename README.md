@@ -26,7 +26,7 @@ Projects can be contained in folders or entirely in a json file. Take a look at 
 
 ##Todo
 * More reliable error handling
-* generate <template> <directory>
+* generate \<template> \<directory>
 * Write up template spec
 * Actual templates i.e. run files through templating engine getting variables from config file or arguments
 * Reliable template parsing when adding, throwing errors if `project.json` does not exist etc.
