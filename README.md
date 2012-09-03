@@ -1,4 +1,4 @@
-#generate -- Project template generation
+#generate
 Simple project generation from templates. It's admittedly brittle and won't handle errors well, yet. 
 
 ##Dependencies
